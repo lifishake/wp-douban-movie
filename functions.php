@@ -42,13 +42,19 @@ function wpd_get_post_image($post_id) {
 
 function get_movie_image( $id ) {
     $data = get_movie_detail($id);
-    $image = wpd_save_images($id,$data['img']);
-    return $image;
+    if ($data) {
+        $image = wpd_save_images($id,$data["data"][0]['poster']);
+        return $image;
+    }
+    return false;
 }
 
 function display_movie_detail($id){
     $data = get_movie_detail($id);
-    $output = '<div class="doulist-item"><div class="doulist-subject"><div class="post"><img src="'.  wpd_save_images($id,$data['img']) .'"></div>';
+    if (!$data) {
+        return "<span>error, try later.</span>";
+    }
+    $output = '<div class="doulist-item"><div class="doulist-subject"><div class="post"><img src="'.  wpd_save_images($id,$data["data"][0]['poster']) .'"></div>';
     $output .= '<div class="content"><div class="title"><a href="//movie.douban.com/subject/'. $data["doubanId"] .'/" class="cute" target="_blank" rel="external nofollow">'. $data["data"][0]["name"] .'</a></div>';
     $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data["doubanRating"]*10 . '%"></span></span><span class="rating_nums"> ' . $data["doubanRating"]. ' </span><span>(' . $data["doubanVotes"]. '人评价)</span></div>';
     $output .= '<div class="abstract">导演 :';
@@ -97,15 +103,6 @@ function get_movie_detail($id){
         return false;
     }
     $content = json_decode(wp_remote_retrieve_body($response),true);
-    /*
-    $response = @wp_remote_get($img_link);
-    if (is_wp_error($response))
-    {
-        return false;
-    }
-    $img_content = json_decode(wp_remote_retrieve_body($response),true);
-    */
-    $content['img'] = $content["data"][0]['poster'];
     set_transient($cache_key, $content, WPD_CACHE_TIME );
 
     return $content;

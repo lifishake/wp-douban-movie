@@ -14,13 +14,10 @@ function wp_embed_handler_doubanlist( $matches, $attr, $url, $rawattr ){
     if(! is_singular() ) return $url;
     $type = $matches[1];
     $id = $matches[2];
-    if ( $type == 'music' ) {
-        $html = display_music_detail($id);
-    } elseif ( $type == 'movie' ) {
+    if ( $type == 'movie' ) {
         $html = display_movie_detail($id);
-    } elseif ( $type == 'book' ) {
-        $html = display_book_detail($id);
+    } else {
+        return $url;
     }
-
     return apply_filters( 'embed_forbes', $html, $matches, $attr, $url, $rawattr );
 }
